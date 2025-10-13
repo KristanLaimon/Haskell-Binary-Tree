@@ -3,8 +3,6 @@ import Data.Foldable (maximumBy)
 import Data.Ord (comparing)
 {-# HLINT ignore "Eta reduce" #-}
 
-separator = "========================================"
-
 data Cliente = Cliente {
   nombre::String,
   edad::Int,
@@ -29,24 +27,19 @@ sumaSaldo :: [Cliente] -> Float
 sumaSaldo [] = 0
 sumaSaldo clientsList = foldr (\client acum -> saldo client + acum) 0 clientsList
 
-
 -- | Calcula el promedio de saldos dada una lista de clientes
 saldoPromedio:: [Cliente] -> Float
 saldoPromedio [] = 0
 saldoPromedio clientsList = sumaSaldo clientsList / fromIntegral (length clientsList)
-
 
 -- función clienteMax (devolver los datos del cliente mayor, dada una lista de empleados)
 clienteMax :: [Cliente] -> Cliente
 clienteMax [] = error "Can't get maximum client from an empty list..."
 clienteMax clientsList = maximumBy (comparing saldo) clientsList
 
-
+-- | Prints full info from a client to be visible on console
 clienteToString :: Cliente -> String
 clienteToString client = "Name: " ++ nombre client ++ " | Age: " ++ show (edad client) ++ " | Money: " ++ show (saldo client)
-
-clienteLog :: Cliente -> IO()
-clienteLog client = putStrLn $ clienteToString client
 
 consolelog :: String -> IO ()
 consolelog = putStrLn
@@ -56,5 +49,3 @@ main = do
   consolelog $ "Saldo total: " ++ show (sumaSaldo clients)
   consolelog $ "Saldo promedio: " ++ show (saldoPromedio clients)
   consolelog $ "Cliente MAX: " ++ clienteToString (clienteMax clients)
-
-
