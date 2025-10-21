@@ -19,9 +19,14 @@ module BinaryTree (
     nodeToString,
 
     --Sum
-    sumAllNodes
+    sumAllNodes,
+
+    --Max
+    maxNode
 ) where
 import Data.Sequence (Seq(Empty))
+import Data.Map.Internal.Debug (node)
+import Control.Arrow (ArrowChoice(right))
 
 -- | Represents a single node in a binary search tree.
 -- Each node contains an integer value and may have left and right children.
@@ -127,3 +132,12 @@ sumMaybeNodes (Just n) = sumAllNodes n
 
 
 -- ================ 5. Maximo  =======================
+maxNode :: Node -> Integer
+maxNode node =
+  max (value node)
+      (max (maxMaybeNode (leftNode node))
+           (maxMaybeNode (rightNode node)))
+
+maxMaybeNode :: Maybe Node -> Integer
+maxMaybeNode Nothing = 0
+maxMaybeNode (Just n) = maxNode n
