@@ -47,6 +47,7 @@ nodeCreateFromList (x:xs) =
 
 
 -- ================ 1. Insertar =======================
+-- Helper to handle Maybe Nodes (null | Node equivalent)
 nodeInsertIntoMaybe :: Maybe Node -> Integer -> Maybe Node
 nodeInsertIntoMaybe Nothing newValue = Just (Node {value = newValue, leftNode = Nothing, rightNode = Nothing})
 nodeInsertIntoMaybe (Just node) newValue = Just (nodeInsertInto node newValue)
@@ -68,8 +69,8 @@ nodeInsertIntoWithList :: Node -> [Integer] -> Node
 nodeInsertIntoWithList node listToAdd = foldl nodeInsertInto node listToAdd
 
 
-
 -- ============ 2. Buscar ==============
+-- Helper to handle Maybe Nodes (null | Node equivalent)
 nodeSearchValueFromMaybe :: Maybe Node -> Integer -> Maybe Node
 nodeSearchValueFromMaybe Nothing valueToSearch = Nothing
 nodeSearchValueFromMaybe (Just node) valueToSearch = nodeSearchValueFrom node valueToSearch
@@ -89,6 +90,7 @@ nodeSearchValueFrom myNode valueToSearch
 
 
 -- ============== 3. Recorrer (Preorder) ================
+-- Helper to handle Maybe Nodes (null | Node equivalent)
 nodeToStringMaybe :: Maybe Node -> String -> String -> String
 nodeToStringMaybe Nothing indent prefix = indent ++ prefix ++ "#\n"
 nodeToStringMaybe (Just node) indent prefix =
