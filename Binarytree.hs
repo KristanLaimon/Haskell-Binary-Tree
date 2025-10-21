@@ -27,6 +27,7 @@ data Node = Node {
   rightNode :: Maybe Node  -- ^ The right child node, which is larger than the current node's value or 'Nothing'
 }
 
+-- Node() Constuctors
 -- | Creates a single root node with a specified value and no children.
 nodeCreateSimpleWithValue :: Integer -> Node
 nodeCreateSimpleWithValue value = Node{value=value, leftNode=Nothing, rightNode=Nothing}
