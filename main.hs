@@ -1,4 +1,4 @@
-import BinaryTree(Node(..), nodeInsertInto, nodeToString, nodeSearchValueFrom, nodeCreateSimpleWithValue )
+import BinaryTree(Node(..), nodeInsertInto, nodeToString, nodeSearchValueFrom, nodeCreateSimpleWithValue, nodeCreateFromList, sumAllNodes )
 import BinaryTreeDefaults (exampleRootNode)
 
 main :: IO()

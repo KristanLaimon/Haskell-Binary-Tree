@@ -16,8 +16,12 @@ module BinaryTree (
     nodeSearchValueFrom, 
 
     --Travelling
-    nodeToString
+    nodeToString,
+
+    --Sum
+    sumAllNodes
 ) where
+import Data.Sequence (Seq(Empty))
 
 -- | Represents a single node in a binary search tree.
 -- Each node contains an integer value and may have left and right children.
@@ -112,3 +116,14 @@ nodeToString node =
     nodeToStringMaybe (rightNode node) "  " "R: "
 
 -- ================ 4. Sumar (Preorder) =======================
+sumAllNodes :: Node -> Integer
+sumAllNodes node = value node 
+    + sumMaybeNodes (leftNode node) 
+    + sumMaybeNodes (rightNode node)
+
+sumMaybeNodes :: Maybe Node -> Integer
+sumMaybeNodes Nothing = 0
+sumMaybeNodes (Just n) = sumAllNodes n
+
+
+-- ================ 5. Maximo  =======================
