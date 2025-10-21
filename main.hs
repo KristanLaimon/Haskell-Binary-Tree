@@ -1,4 +1,5 @@
 import BinaryTree(Node(..), nodeInsertInto, nodeToString, nodeSearchValueFrom, nodeCreateSimpleWithValue )
+import BinaryTreeDefaults (exampleRootNode)
 
 main :: IO()
 main = do
@@ -12,5 +13,9 @@ main = do
       putStrLn $ nodeToString node
     Nothing -> do
       putStrLn "Node not found..."
+
+  putStrLn "======================"
+
+  putStrLn $ nodeToString exampleRootNode
 
 
