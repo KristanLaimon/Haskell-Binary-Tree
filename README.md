@@ -1,9 +1,9 @@
 <div style="text-align: center;">
-<h1>Haskell Training (repo)</h1>
+<h1>Haskell Binary Tree</h1>
   <img src=".github/haskelllogo.png" width="40%">
 </div>
 
-This is a small repo, trying to learn important concepts from functional paradigm and other stuff.
+This is a small repo, for learning binary trees and other data structures using functional paradigm only
 
 ## Mini proyects included:
 
@@ -13,13 +13,11 @@ This is a small repo, trying to learn important concepts from functional paradig
 - Search
 - Deletion
 
-> Well, that's it! 🦊
-
 ## Licence
 
 MIT License
 
-Copyright (c) 2025 KristanLaimon
+Copyright (c) 2025 KristanLaimon, Machaca, Andryk
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
