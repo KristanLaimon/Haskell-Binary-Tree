@@ -22,7 +22,10 @@ module BinaryTree (
     sumAllNodes,
 
     --Max
-    maxNode
+    maxNode,
+
+    --Count
+    countNodes
 ) where
 import Data.Sequence (Seq(Empty))
 import Data.Map.Internal.Debug (node)
@@ -121,6 +124,7 @@ nodeToString node =
     nodeToStringMaybe (rightNode node) "  " "R: "
 
 -- ================ 4. Sumar (Preorder) =======================
+
 sumAllNodes :: Node -> Integer
 sumAllNodes node = value node 
     + sumMaybeNodes (leftNode node) 
@@ -141,3 +145,12 @@ maxNode node =
 maxMaybeNode :: Maybe Node -> Integer
 maxMaybeNode Nothing = 0
 maxMaybeNode (Just n) = maxNode n
+
+-- ================ 6. Contar  =======================
+countNodes :: Node -> Integer
+countNodes node =
+    1 + countMaybeNodes (leftNode node) + countMaybeNodes(rightNode node)
+
+countMaybeNodes :: Maybe Node -> Integer
+countMaybeNodes Nothing = 0
+countMaybeNodes (Just node) = countNodes node
