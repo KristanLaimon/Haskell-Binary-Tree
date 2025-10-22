@@ -10,7 +10,7 @@ import BinaryTree (
     sumAllNodes,
     maxNode,
     countNodes,
-    nodeDelete                -- <--- Added
+    nodeDelete 
   )
 import System.IO (hFlush, stdout, hSetEncoding, utf8, hSetBuffering, BufferMode(NoBuffering))
 import Text.Read (readMaybe)
@@ -35,7 +35,6 @@ mainLoop :: Maybe Node -> IO ()
 mainLoop maybeCurrentNode = do
     choice <- displayMenuAndGetChoice menuOptions -- This clears the screen
     
-    -- All handlers now accept 'Maybe Node' and return '(Maybe Node, Bool)'
     (newMaybeNode, shouldExit) <- case choice of
         1 -> handleInsert maybeCurrentNode
         2 -> handleSearch maybeCurrentNode
@@ -45,13 +44,13 @@ mainLoop maybeCurrentNode = do
         6 -> handleCount maybeCurrentNode
         7 -> handleDelete maybeCurrentNode
         8 -> handleExit maybeCurrentNode
-        _ -> return (maybeCurrentNode, False) -- Should be unreachable
+        _ -> return (maybeCurrentNode, False) -- Should not reach there, just in case...
     
     if shouldExit
-        then return () -- Exit the program
+        then return () -- Exit
         else do
-            pressAnyKeyToContinue -- Wait for user input
-            mainLoop newMaybeNode -- Loop with the new tree state
+            pressAnyKeyToContinue 
+            mainLoop newMaybeNode
 
 -- | Handler for option 1: Insert
 -- | This is the only function that can change the state from 'Nothing' to 'Just Node'.
@@ -196,7 +195,6 @@ handleExit maybeCurrentNode = do
 -- | Main entry point
 main :: IO ()
 main = do
-    -- Set encoding to UTF-8 to handle special characters
     hSetEncoding stdout utf8 
     -- Disable buffering to ensure prompts appear immediately
     hSetBuffering stdout NoBuffering
