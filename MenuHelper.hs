@@ -1,8 +1,21 @@
 -- File: MenuHelper.hs
-module MenuHelper (displayMenuAndGetChoice) where
+module MenuHelper (displayMenuAndGetChoice, pressAnyKeyToContinue) where
 
 import Text.Read (readMaybe)
 import System.IO (hFlush, stdout)
+
+-- | Clears the screen by printing 50 newlines.
+-- | This is a simple, cross-platform way to clear the TUI.
+clearScreen :: IO ()
+clearScreen = putStr $ replicate 50 '\n'
+
+-- | Prompts the user and waits for them to press Enter.
+pressAnyKeyToContinue :: IO ()
+pressAnyKeyToContinue = do
+    putStr "\nPresiona Enter para continuar..."
+    hFlush stdout
+    _ <- getLine -- Read and discard the line
+    return ()
 
 -- | Displays a menu of options, prompts the user for a choice,
 -- | and returns the valid selected option number as an Integer.
@@ -10,8 +23,8 @@ import System.IO (hFlush, stdout)
 -- | is outside the range of options.
 displayMenuAndGetChoice :: [String] -> IO Integer
 displayMenuAndGetChoice options = do
-    -- Display all menu options
-    putStrLn "\n==================== MENU ===================="
+    clearScreen -- <--- Added
+    putStrLn "==================== MENU ===================="
     mapM_ putStrLn options
     putStrLn "=============================================="
     

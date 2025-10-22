@@ -1,16 +1,21 @@
 -- File: main.hs
-import MenuHelper (displayMenuAndGetChoice)
+import MenuHelper (displayMenuAndGetChoice, pressAnyKeyToContinue)
 import BinaryTree (
     Node(..), 
+    nodeCreateSimpleWithValue, -- <--- Added
     nodeInsertInto, 
     nodeToString, 
     nodeSearchValueFrom, 
-    nodeCreateFromList
+    nodeCreateFromList,
+    sumAllNodes,
+    maxNode,
+    countNodes
   )
-import BinaryTreeDefaults (exampleRootNode)
-import System.IO (hFlush, stdout,hSetEncoding, utf8, utf16)
+-- import BinaryTreeDefaults (exampleRootNode) -- <--- Removed
+import System.IO (hFlush, stdout, hSetEncoding, utf8, hSetBuffering, BufferMode(NoBuffering))
 import Text.Read (readMaybe)
 
+-- | The list of options for the main menu.
 menuOptions :: [String]
 menuOptions = [
     "1. Insertar valor",
@@ -24,109 +29,149 @@ menuOptions = [
   ]
 
 -- | The main application loop.
--- | It takes the current state of the tree, shows the menu,
--- | and then calls itself recursively with the (potentially) new tree state.
-mainLoop :: Node -> IO ()
-mainLoop currentNode = do
-    choice <- displayMenuAndGetChoice menuOptions
+-- | It now takes a 'Maybe Node' as the state,
+-- | allowing the tree to start as 'Nothing' (empty).
+mainLoop :: Maybe Node -> IO ()
+mainLoop maybeCurrentNode = do
+    choice <- displayMenuAndGetChoice menuOptions -- This clears the screen
     
-    case choice of
-        1 -> handleInsert currentNode
-        2 -> handleSearch currentNode
-        3 -> handleTraverse currentNode
-        4 -> handleSum currentNode
-        5 -> handleMax currentNode
-        6 -> handleCount currentNode
-        7 -> handleDelete currentNode
-        8 -> putStrLn "\n¡Adiós!" >> return ()
-        _ -> mainLoop currentNode -- Should be unreachable due to MenuHelper, just in case
+    -- All handlers now accept 'Maybe Node' and return '(Maybe Node, Bool)'
+    (newMaybeNode, shouldExit) <- case choice of
+        1 -> handleInsert maybeCurrentNode
+        2 -> handleSearch maybeCurrentNode
+        3 -> handleTraverse maybeCurrentNode
+        4 -> handleSum maybeCurrentNode
+        5 -> handleMax maybeCurrentNode
+        6 -> handleCount maybeCurrentNode
+        7 -> handleDelete maybeCurrentNode
+        8 -> handleExit maybeCurrentNode
+        _ -> return (maybeCurrentNode, False) -- Should be unreachable
+    
+    if shouldExit
+        then return () -- Exit the program
+        else do
+            pressAnyKeyToContinue -- Wait for user input
+            mainLoop newMaybeNode -- Loop with the new tree state
 
 -- | Handler for option 1: Insert
-handleInsert :: Node -> IO ()
-handleInsert currentNode = do
+-- | This is the only function that can change the state from 'Nothing' to 'Just Node'.
+handleInsert :: Maybe Node -> IO (Maybe Node, Bool)
+handleInsert maybeCurrentNode = do
     putStr "== 1. Insertar ==\nIngresa el valor numérico a insertar: "
-    hFlush stdout
     input <- getLine
     let maybeVal = readMaybe input :: Maybe Integer
     
     case maybeVal of
         Nothing -> do
             putStrLn "[Error] Entrada no válida. Debes ingresar un número."
-            mainLoop currentNode
+            return (maybeCurrentNode, False) -- Return old state
+        
         Just val -> do
-            let newNode = nodeInsertInto currentNode val
-            putStrLn $ "Valor " ++ show val ++ " insertado."
-            putStrLn "Nuevo árbol:"
-            putStrLn $ nodeToString newNode
-            mainLoop newNode -- Continue loop with the new tree
+            -- Case logic for insertion
+            case maybeCurrentNode of
+                -- If tree is empty ('Nothing'), create the first node.
+                Nothing -> do
+                    let newNode = nodeCreateSimpleWithValue val
+                    putStrLn $ "Árbol iniciado con el valor " ++ show val ++ "."
+                    putStrLn $ nodeToString newNode
+                    return (Just newNode, False) -- Return new state
+                
+                -- If tree exists, insert into it.
+                Just node -> do
+                    let newNode = nodeInsertInto node val
+                    putStrLn $ "Valor " ++ show val ++ " insertado."
+                    putStrLn "Nuevo árbol:"
+                    putStrLn $ nodeToString newNode
+                    return (Just newNode, False) -- Return new state
 
 -- | Handler for option 2: Search
-handleSearch :: Node -> IO ()
-handleSearch currentNode = do
-    putStr "== 2. Buscar ==\nIngresa el valor numérico a buscar: "
-    hFlush stdout
-    input <- getLine
-    let maybeVal = readMaybe input :: Maybe Integer
+handleSearch :: Maybe Node -> IO (Maybe Node, Bool)
+handleSearch maybeCurrentNode = do
+    case maybeCurrentNode of
+        Nothing -> putStrLn "El árbol está vacío. No se puede buscar."
+        Just node -> do
+            putStr "== 2. Buscar ==\nIngresa el valor numérico a buscar: "
+            input <- getLine
+            let maybeVal = readMaybe input :: Maybe Integer
+            
+            case maybeVal of
+                Nothing -> putStrLn "[Error] Entrada no válida. Debes ingresar un número."
+                Just val -> do
+                    let mFoundNode = nodeSearchValueFrom node val
+                    case mFoundNode of
+                        Nothing -> putStrLn $ "Valor " ++ show val ++ " NO encontrado."
+                        Just n  -> putStrLn $ "¡Valor " ++ show val ++ " encontrado!"
     
-    case maybeVal of
-        Nothing -> do
-            putStrLn "[Error] Entrada no válida. Debes ingresar un número."
-            mainLoop currentNode
-        Just val -> do
-            let mFoundNode = nodeSearchValueFrom currentNode val
-            case mFoundNode of
-                Nothing -> putStrLn $ "Valor " ++ show val ++ " NO encontrado."
-                Just n  -> putStrLn $ "¡Valor " ++ show val ++ " encontrado!"
-            mainLoop currentNode -- Continue loop with the same tree
+    return (maybeCurrentNode, False) -- Tree state does not change
 
 -- | Handler for option 3: Traverse
-handleTraverse :: Node -> IO ()
-handleTraverse currentNode = do
+handleTraverse :: Maybe Node -> IO (Maybe Node, Bool)
+handleTraverse maybeCurrentNode = do
     putStrLn "== 3. Recorrer (Preorder) =="
-    putStrLn $ nodeToString currentNode
-    mainLoop currentNode
+    case maybeCurrentNode of
+        Nothing -> putStrLn "El árbol está vacío."
+        Just node -> putStrLn $ nodeToString node
+    return (maybeCurrentNode, False) -- Tree state does not change
 
 -- | Handler for option 4: Sum
-handleSum :: Node -> IO ()
-handleSum currentNode = do
+handleSum :: Maybe Node -> IO (Maybe Node, Bool)
+handleSum maybeCurrentNode = do
     putStrLn "== 4. Sumar =="
-    putStrLn "Función no implementada."
-    -- TODO: Implement nodeSum and call it here
-    -- let total = nodeSum currentNode
-    -- putStrLn $ "La suma de todos los nodos es: " ++ show total
-    mainLoop currentNode
+    case maybeCurrentNode of
+        Nothing -> putStrLn "El árbol está vacío. La suma es 0."
+        Just node -> do
+            let total = sumAllNodes node 
+            putStrLn $ "La suma de todos los nodos es: " ++ show total
+    return (maybeCurrentNode, False) -- Tree state does not change
 
 -- | Handler for option 5: Max
-handleMax :: Node -> IO ()
-handleMax currentNode = do
+handleMax :: Maybe Node -> IO (Maybe Node, Bool)
+handleMax maybeCurrentNode = do
     putStrLn "== 5. Máximo =="
-    putStrLn "Función no implementada."
-    -- TODO: Implement nodeMax and call it here
-    mainLoop currentNode
+    case maybeCurrentNode of
+        Nothing -> putStrLn "El árbol está vacío. No hay valor máximo."
+        Just node -> do
+            let maxVal = maxNode node
+            putStrLn $ "El valor máximo en el árbol es: " ++ show maxVal
+    return (maybeCurrentNode, False) -- Tree state does not change
 
 -- | Handler for option 6: Count
-handleCount :: Node -> IO ()
-handleCount currentNode = do
+handleCount :: Maybe Node -> IO (Maybe Node, Bool)
+handleCount maybeCurrentNode = do
     putStrLn "== 6. Contar =="
-    putStrLn "Función no implementada."
-    -- TODO: Implement nodeCount and call it here
-    mainLoop currentNode
+    case maybeCurrentNode of
+        Nothing -> putStrLn "El árbol está vacío. El conteo es 0."
+        Just node -> do
+            let count = countNodes node
+            putStrLn $ "El número total de nodos es: " ++ show count
+    return (maybeCurrentNode, False) -- Tree state does not change
 
 -- | Handler for option 7: Delete
-handleDelete :: Node -> IO ()
-handleDelete currentNode = do
+handleDelete :: Maybe Node -> IO (Maybe Node, Bool)
+handleDelete maybeCurrentNode = do
     putStrLn "== 7. Eliminar =="
-    putStrLn "Función no implementada."
-    -- TODO: Implement nodeDelete and call it here
-    mainLoop currentNode
+    case maybeCurrentNode of
+        Nothing -> putStrLn "El árbol está vacío. No se puede eliminar."
+        Just node -> putStrLn "Función no implementada."
+    return (maybeCurrentNode, False) -- Tree state does not change
+
+-- | Handler for option 8: Exit
+handleExit :: Maybe Node -> IO (Maybe Node, Bool)
+handleExit maybeCurrentNode = do
+    putStrLn "\n¡Adiós!"
+    return (maybeCurrentNode, True) -- Return True to signal exit
 
 -- | Main entry point
 main :: IO ()
 main = do
-    hSetEncoding stdout utf16 
+    -- Set encoding to UTF-8 to handle special characters
+    hSetEncoding stdout utf8 
+    -- Disable buffering to ensure prompts appear immediately
+    hSetBuffering stdout NoBuffering
+    
     putStrLn "==========================================="
     putStrLn "Práctica: Árboles Binarios en Haskell"
-    putStrLn "Cargando árbol de ejemplo..."
-    -- We use the example tree from your BinaryTreeDefaults.hs file
-    let rootNode = exampleRootNode
-    mainLoop rootNode
+    putStrLn "El árbol está vacío. Selecciona '1' para empezar."
+    
+    -- Start the main loop with 'Nothing', representing an empty tree.
+    mainLoop Nothing
