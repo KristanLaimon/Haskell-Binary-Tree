@@ -25,7 +25,10 @@ module BinaryTree (
     maxNode,
 
     --Count
-    countNodes
+    countNodes,
+
+    --Delete
+    nodeDelete
 ) where
 import Data.Sequence (Seq(Empty))
 import Data.Map.Internal.Debug (node)
@@ -154,3 +157,47 @@ countNodes node =
 countMaybeNodes :: Maybe Node -> Integer
 countMaybeNodes Nothing = 0
 countMaybeNodes (Just node) = countNodes node
+
+-- ================ 7. Eliminar  =======================
+
+-- | Helper to find the smallest node (in-order successor) in a subtree.
+findMinNode :: Node -> Node
+findMinNode node = case leftNode node of
+    Nothing -> node
+    Just left -> findMinNode left
+
+-- | Helper to wrap nodeDelete for Maybe types.
+nodeDeleteMaybe :: Maybe Node -> Integer -> Maybe Node
+nodeDeleteMaybe Nothing _ = Nothing
+nodeDeleteMaybe (Just node) val = nodeDelete node val
+
+-- | Deletes a node with the given value from the tree.
+-- | Returns 'Nothing' if the node to delete was the last node in the tree,
+-- | otherwise returns 'Just' the new tree root.
+nodeDelete :: Node -> Integer -> Maybe Node
+nodeDelete node valToDelete
+    -- Search for the node
+    | valToDelete < value node = Just (node { leftNode = nodeDeleteMaybe (leftNode node) valToDelete })
+    | valToDelete > value node = Just (node { rightNode = nodeDeleteMaybe (rightNode node) valToDelete })
+    
+    -- Node found, handle cases
+    | otherwise = case (leftNode node, rightNode node) of
+        -- Case 1: No children (Leaf node)
+        (Nothing, Nothing) -> Nothing
+        
+        -- Case 2: One child (left)
+        (Just left, Nothing) -> Just left
+        
+        -- Case 2: One child (right)
+        (Nothing, Just right) -> Just right
+        
+        -- Case 3: Two children
+        (Just left, Just right) ->
+            -- Find the in-order successor (smallest value in the right subtree)
+            let successor = findMinNode right
+            in Just (successor { 
+                leftNode = Just left, -- Attach the original left subtree
+                -- Attach the original right subtree,
+                -- but with the successor recursively deleted from it.
+                rightNode = nodeDeleteMaybe (Just right) (value successor)
+            })

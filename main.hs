@@ -2,16 +2,16 @@
 import MenuHelper (displayMenuAndGetChoice, pressAnyKeyToContinue)
 import BinaryTree (
     Node(..), 
-    nodeCreateSimpleWithValue, -- <--- Added
+    nodeCreateSimpleWithValue, 
     nodeInsertInto, 
     nodeToString, 
     nodeSearchValueFrom, 
     nodeCreateFromList,
     sumAllNodes,
     maxNode,
-    countNodes
+    countNodes,
+    nodeDelete                -- <--- Added
   )
--- import BinaryTreeDefaults (exampleRootNode) -- <--- Removed
 import System.IO (hFlush, stdout, hSetEncoding, utf8, hSetBuffering, BufferMode(NoBuffering))
 import Text.Read (readMaybe)
 
@@ -151,9 +151,41 @@ handleDelete :: Maybe Node -> IO (Maybe Node, Bool)
 handleDelete maybeCurrentNode = do
     putStrLn "== 7. Eliminar =="
     case maybeCurrentNode of
-        Nothing -> putStrLn "El árbol está vacío. No se puede eliminar."
-        Just node -> putStrLn "Función no implementada."
-    return (maybeCurrentNode, False) -- Tree state does not change
+        Nothing -> do
+            putStrLn "El árbol está vacío. No se puede eliminar."
+            return (Nothing, False)
+        
+        Just node -> do
+            putStr "Ingresa el valor numérico a eliminar: "
+            input <- getLine
+            let maybeVal = readMaybe input :: Maybe Integer
+
+            case maybeVal of
+                Nothing -> do
+                    putStrLn "[Error] Entrada no válida. Debes ingresar un número."
+                    return (Just node, False)
+                
+                Just val -> do
+                    -- Check if value exists before deleting
+                    case nodeSearchValueFrom node val of
+                        Nothing -> do
+                            putStrLn $ "[Error] Valor " ++ show val ++ " no encontrado en el árbol."
+                            return (Just node, False)
+                        
+                        Just _ -> do
+                            -- Perform the deletion
+                            let newMaybeNode = nodeDelete node val
+                            putStrLn $ "Valor " ++ show val ++ " eliminado."
+                            
+                            case newMaybeNode of
+                                Nothing -> do
+                                    putStrLn "El árbol ha quedado vacío."
+                                    return (Nothing, False)
+                                Just newNode -> do
+                                    putStrLn "Nuevo árbol:"
+                                    putStrLn $ nodeToString newNode
+                                    return (Just newNode, False)
+
 
 -- | Handler for option 8: Exit
 handleExit :: Maybe Node -> IO (Maybe Node, Bool)
