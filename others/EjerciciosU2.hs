@@ -128,12 +128,12 @@ Diferencia entre putStr, putStrLn y print:
 GetLine: lee una linea de entrada del usuario como cadena
 main :: IO () permite definir la funcion principal del programa
 do: permite encadenar varias acciones de entrada/salida de forma secuencial
-$: operador que aplica una funcion a un valor, evitando paréntesis adicionales
+$: operador que aplica una funcion a un valor, evitando parentesis adicionales
 -}
 
 {-
 main = do
-    putStrLn "Hola, ¿cómo te llamas?"
+    putStrLn "Hola, ¿como te llamas?"
     nombre <- getLine
     putStrLn ("Hey " ++ nombre ++ "!")
 
@@ -351,7 +351,7 @@ main = do
     putStrLn $ "Multiplos de 4 del 1 al 50: " ++ show multiplosde4
 
 -- Ejercicio escribir una funcion "multiplos" que reciba un valor n y una lista
--- de enteros, y nos devuelva una sublista de los elementos que son múltiplos de n
+-- de enteros, y nos devuelva una sublista de los elementos que son multiplos de n
     let multiplo:: Int -> [Int] -> [Int]
         multiplo n lista = [x | x <- lista, mod x n == 0]
         multiplo7 = multiplo 7 [1..100]
@@ -362,7 +362,7 @@ main = do
         posicionesLetraS = [x + 1 | x <-[0 .. length carrera - 1], carrera!!x == 's']
     putStrLn $ "Posiciones del caracter s en la cadena Sistemas: " ++ show posicionesLetraS
 
--- Ejercicio en el ejemplo anterior que incluya tanto mayúsculas como minúsculas
+-- Ejercicio en el ejemplo anterior que incluya tanto mayusculas como minusculas
     let posicionesLetraS = [x + 1 | x <-[0 .. length carrera - 1], carrera!!x == 's' || carrera!!x == 'S']
     putStrLn $ "Posiciones del caracter s y S en la cadena Sistemas: " ++ show posicionesLetraS
 

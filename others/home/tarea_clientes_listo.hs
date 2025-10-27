@@ -22,7 +22,7 @@ clients = [cli1, cli2, cli3, cli4, cli5, cli6, cli7]
 
 -- ========================= LIBRARY ==============================
 
--- | Realiza la sumatoría de los saldos dada una lista de clientes
+-- | Realiza la sumatoria de los saldos dada una lista de clientes
 sumaSaldo :: [Cliente] -> Float
 sumaSaldo [] = 0
 sumaSaldo clientsList = foldr (\client acum -> saldo client + acum) 0 clientsList
@@ -32,7 +32,7 @@ saldoPromedio:: [Cliente] -> Float
 saldoPromedio [] = 0
 saldoPromedio clientsList = sumaSaldo clientsList / fromIntegral (length clientsList)
 
--- función clienteMax (devolver los datos del cliente mayor, dada una lista de empleados)
+-- funcion clienteMax (devolver los datos del cliente mayor, dada una lista de empleados)
 clienteMax :: [Cliente] -> Cliente
 clienteMax [] = error "Can't get maximum client from an empty list..."
 clienteMax clientsList = maximumBy (comparing saldo) clientsList

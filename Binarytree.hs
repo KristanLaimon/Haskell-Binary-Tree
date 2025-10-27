@@ -178,10 +178,12 @@ nodeDelete node valToDelete
     | otherwise = case (leftNode node, rightNode node) of
         -- Case 1: No children (Leaf node)
         (Nothing, Nothing) -> Nothing
+
         -- Case 2: One child (left)
         (Just left, Nothing) -> Just left
         -- Case 2: One child (right)
         (Nothing, Just right) -> Just right
+
         -- Case 3: Two children
         (Just left, Just right) ->
             let successor = findMinNode right

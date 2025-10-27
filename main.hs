@@ -20,9 +20,9 @@ menuOptions :: [String]
 menuOptions = [
     "1. Insertar valor",
     "2. Buscar valor",
-    "3. Recorrer (Imprimir árbol)",
-    "4. Sumar valores del árbol",
-    "5. Encontrar valor Máximo",
+    "3. Recorrer (Imprimir arbol)",
+    "4. Sumar valores del arbol",
+    "5. Encontrar valor Maximo",
     "6. Contar nodos",
     "7. Eliminar un nodo",
     "8. Salir"
@@ -56,13 +56,13 @@ mainLoop maybeCurrentNode = do
 -- | This is the only function that can change the state from 'Nothing' to 'Just Node'.
 handleInsert :: Maybe Node -> IO (Maybe Node, Bool)
 handleInsert maybeCurrentNode = do
-    putStr "== 1. Insertar ==\nIngresa el valor numérico a insertar: "
+    putStr "== 1. Insertar ==\nIngresa el valor numerico a insertar: "
     input <- getLine
     let maybeVal = readMaybe input :: Maybe Integer
     
     case maybeVal of
         Nothing -> do
-            putStrLn "[Error] Entrada no válida. Debes ingresar un número."
+            putStrLn "[Error] Entrada no valida. Debes ingresar un numero."
             return (maybeCurrentNode, False) -- Return old state
         
         Just val -> do
@@ -71,7 +71,7 @@ handleInsert maybeCurrentNode = do
                 -- If tree is empty ('Nothing'), create the first node.
                 Nothing -> do
                     let newNode = nodeCreateSimpleWithValue val
-                    putStrLn $ "Árbol iniciado con el valor " ++ show val ++ "."
+                    putStrLn $ "arbol iniciado con el valor " ++ show val ++ "."
                     putStrLn $ nodeToString newNode
                     return (Just newNode, False) -- Return new state
                 
@@ -79,7 +79,7 @@ handleInsert maybeCurrentNode = do
                 Just node -> do
                     let newNode = nodeInsertInto node val
                     putStrLn $ "Valor " ++ show val ++ " insertado."
-                    putStrLn "Nuevo árbol:"
+                    putStrLn "Nuevo arbol:"
                     putStrLn $ nodeToString newNode
                     return (Just newNode, False) -- Return new state
 
@@ -87,14 +87,14 @@ handleInsert maybeCurrentNode = do
 handleSearch :: Maybe Node -> IO (Maybe Node, Bool)
 handleSearch maybeCurrentNode = do
     case maybeCurrentNode of
-        Nothing -> putStrLn "El árbol está vacío. No se puede buscar."
+        Nothing -> putStrLn "El arbol esta vacio. No se puede buscar."
         Just node -> do
-            putStr "== 2. Buscar ==\nIngresa el valor numérico a buscar: "
+            putStr "== 2. Buscar ==\nIngresa el valor numerico a buscar: "
             input <- getLine
             let maybeVal = readMaybe input :: Maybe Integer
             
             case maybeVal of
-                Nothing -> putStrLn "[Error] Entrada no válida. Debes ingresar un número."
+                Nothing -> putStrLn "[Error] Entrada no valida. Debes ingresar un numero."
                 Just val -> do
                     let mFoundNode = nodeSearchValueFrom node val
                     case mFoundNode of
@@ -108,7 +108,7 @@ handleTraverse :: Maybe Node -> IO (Maybe Node, Bool)
 handleTraverse maybeCurrentNode = do
     putStrLn "== 3. Recorrer (Preorder) =="
     case maybeCurrentNode of
-        Nothing -> putStrLn "El árbol está vacío."
+        Nothing -> putStrLn "El arbol esta vacio."
         Just node -> putStrLn $ nodeToString node
     return (maybeCurrentNode, False) -- Tree state does not change
 
@@ -117,7 +117,7 @@ handleSum :: Maybe Node -> IO (Maybe Node, Bool)
 handleSum maybeCurrentNode = do
     putStrLn "== 4. Sumar =="
     case maybeCurrentNode of
-        Nothing -> putStrLn "El árbol está vacío. La suma es 0."
+        Nothing -> putStrLn "El arbol esta vacio. La suma es 0."
         Just node -> do
             let total = sumAllNodes node 
             putStrLn $ "La suma de todos los nodos es: " ++ show total
@@ -126,12 +126,12 @@ handleSum maybeCurrentNode = do
 -- | Handler for option 5: Max
 handleMax :: Maybe Node -> IO (Maybe Node, Bool)
 handleMax maybeCurrentNode = do
-    putStrLn "== 5. Máximo =="
+    putStrLn "== 5. Maximo =="
     case maybeCurrentNode of
-        Nothing -> putStrLn "El árbol está vacío. No hay valor máximo."
+        Nothing -> putStrLn "El arbol esta vacio. No hay valor maximo."
         Just node -> do
             let maxVal = maxNode node
-            putStrLn $ "El valor máximo en el árbol es: " ++ show maxVal
+            putStrLn $ "El valor maximo en el arbol es: " ++ show maxVal
     return (maybeCurrentNode, False) -- Tree state does not change
 
 -- | Handler for option 6: Count
@@ -139,10 +139,10 @@ handleCount :: Maybe Node -> IO (Maybe Node, Bool)
 handleCount maybeCurrentNode = do
     putStrLn "== 6. Contar =="
     case maybeCurrentNode of
-        Nothing -> putStrLn "El árbol está vacío. El conteo es 0."
+        Nothing -> putStrLn "El arbol esta vacio. El conteo es 0."
         Just node -> do
             let count = countNodes node
-            putStrLn $ "El número total de nodos es: " ++ show count
+            putStrLn $ "El numero total de nodos es: " ++ show count
     return (maybeCurrentNode, False) -- Tree state does not change
 
 -- | Handler for option 7: Delete
@@ -151,24 +151,24 @@ handleDelete maybeCurrentNode = do
     putStrLn "== 7. Eliminar =="
     case maybeCurrentNode of
         Nothing -> do
-            putStrLn "El árbol está vacío. No se puede eliminar."
+            putStrLn "El arbol esta vacio. No se puede eliminar."
             return (Nothing, False)
         
         Just node -> do
-            putStr "Ingresa el valor numérico a eliminar: "
+            putStr "Ingresa el valor numerico a eliminar: "
             input <- getLine
             let maybeVal = readMaybe input :: Maybe Integer
 
             case maybeVal of
                 Nothing -> do
-                    putStrLn "[Error] Entrada no válida. Debes ingresar un número."
+                    putStrLn "[Error] Entrada no valida. Debes ingresar un numero."
                     return (Just node, False)
                 
                 Just val -> do
                     -- Check if value exists before deleting
                     case nodeSearchValueFrom node val of
                         Nothing -> do
-                            putStrLn $ "[Error] Valor " ++ show val ++ " no encontrado en el árbol."
+                            putStrLn $ "[Error] Valor " ++ show val ++ " no encontrado en el arbol."
                             return (Just node, False)
                         
                         Just _ -> do
@@ -178,10 +178,10 @@ handleDelete maybeCurrentNode = do
                             
                             case newMaybeNode of
                                 Nothing -> do
-                                    putStrLn "El árbol ha quedado vacío."
+                                    putStrLn "El arbol ha quedado vacio."
                                     return (Nothing, False)
                                 Just newNode -> do
-                                    putStrLn "Nuevo árbol:"
+                                    putStrLn "Nuevo arbol:"
                                     putStrLn $ nodeToString newNode
                                     return (Just newNode, False)
 
@@ -189,7 +189,7 @@ handleDelete maybeCurrentNode = do
 -- | Handler for option 8: Exit
 handleExit :: Maybe Node -> IO (Maybe Node, Bool)
 handleExit maybeCurrentNode = do
-    putStrLn "\n¡Adiós!"
+    putStrLn "\n¡Adios!"
     return (maybeCurrentNode, True) -- Return True to signal exit
 
 -- | Main entry point
@@ -200,8 +200,8 @@ main = do
     hSetBuffering stdout NoBuffering
     
     putStrLn "==========================================="
-    putStrLn "Práctica: Árboles Binarios en Haskell"
-    putStrLn "El árbol está vacío. Selecciona '1' para empezar."
+    putStrLn "Practica: arboles Binarios en Haskell"
+    putStrLn "El arbol esta vacio. Selecciona '1' para empezar."
     
     -- Start the main loop with 'Nothing', representing an empty tree.
     mainLoop Nothing
